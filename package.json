@@ -1,0 +1,11 @@
+{
+  "name": "tlie0009-flexifreight-calculations",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "FlexiFreight Digital Calculation Tools Simulator",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check js/app.js && node --check js/flexi-app.js && node --check js/flexi-config.js && node --check js/calculations.js && node --check js/flexi-pdf.js && node --test"
+  }
+}

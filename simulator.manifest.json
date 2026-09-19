@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "fts-assessment-simulator/1.0",
+  "slug": "tlie0009-flexifreight-calculations",
+  "title": "FlexiFreight Digital Calculation Tools Simulator",
+  "unitCode": "TLIE0009",
+  "task": "03A Activity 2.4",
+  "kitVersion": "1.0.0",
+  "completionPrefix": "E0009",
+  "repositoryUrl": "https://github.com/ftslearningresources-hub/tlie0009-flexifreight-calculations",
+  "pagesUrl": "https://ftslearningresources-hub.github.io/tlie0009-flexifreight-calculations",
+  "launchUrls": {
+    "start": "https://ftslearningresources-hub.github.io/tlie0009-flexifreight-calculations/",
+    "completion": "https://ftslearningresources-hub.github.io/tlie0009-flexifreight-calculations/#completion"
+  },
+  "evidence": {
+    "mode": "learner-provided",
+    "pdfReport": true,
+    "localStorageOnly": true
+  },
+  "status": "draft"
+}

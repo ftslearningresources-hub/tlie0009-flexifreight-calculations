@@ -1,0 +1,25 @@
+import { simulator } from "./config.js";
+import { SimulatorStore, canOpenStage, completeStage, finishAttempt, recordEvent } from "./core.js";
+import { downloadEvidencePdf } from "./pdf.js";
+
+const store = new SimulatorStore(simulator);
+let state = store.load();
+const app = document.querySelector("#app");
+const logo = "assets/FTS_logo_enhanced_transparent_4096.png";
+const esc = (value) => String(value ?? "").replace(/[&<>\"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" })[character]);
+
+function persist() { store.save(state); }
+function applyRoute() { const requested = window.location.hash.slice(1); if (simulator.stages.some((stage) => stage.id === requested) && canOpenStage(simulator, state, requested)) state.activeStage = requested; }
+function render() {
+  applyRoute();
+  if (state.completion) { renderCompletion(); return; }
+  const stage = simulator.stages.find((item) => item.id === state.activeStage);
+  app.innerHTML = `<header class="site-header"><div class="brand"><img src="${logo}" alt="Flexible Training Solutions"><div><strong>${esc(simulator.systemName)}</strong><span>${esc(simulator.systemType)} · ${esc(simulator.unitCode)}</span></div></div><button class="button button-secondary" id="reset">Reset session</button></header><main class="shell" id="main-content"><section class="brief"><p class="eyebrow">Guided workplace simulation</p><h1>${esc(simulator.title)}</h1><p>Work through the current job in the simulated system. Progress is saved only on this device.</p></section><nav class="progress" aria-label="Job stages">${simulator.stages.map((item) => `<button data-stage="${esc(item.id)}" class="${state.completedStages.includes(item.id) ? "is-complete" : ""}" ${item.id === stage.id ? 'aria-current="step"' : ""} ${item.id !== stage.id && !state.completedStages.includes(item.id) ? "disabled" : ""}>${esc(item.label)}</button>`).join("")}</nav><section class="grid"><article class="card"><div class="card-header"><p class="eyebrow">Current job · ${esc(simulator.task)}</p><h2>${esc(stage.prompt)}</h2></div><div class="card-body"><p>${esc(stage.instruction)}</p><div class="note">This starter provides the guided job flow. Replace this panel with the task-specific TMS, WMS, dashboard or workplace-system interaction while retaining the progression and evidence utilities.</div></div></article><form class="card" id="stage-form"><div class="card-header"><p class="eyebrow">System workspace</p><h2>${esc(stage.label)}</h2></div><div class="card-body"><label class="field">${esc(stage.field.label)}<textarea name="response" required>${esc(state.fields[stage.id]?.response || "")}</textarea><span class="help">${esc(stage.field.hint)}</span></label><p class="message error" id="message" aria-live="polite"></p><div class="actions"><button class="button button-primary">${stage.id === simulator.stages.at(-1).id ? "Finalise job" : "Save and continue"}</button></div></div></form></section></main>`;
+  document.querySelector("#reset").addEventListener("click", resetAttempt);
+  document.querySelectorAll("[data-stage]").forEach((button) => button.addEventListener("click", () => { state.activeStage = button.dataset.stage; persist(); render(); }));
+  document.querySelector("#stage-form").addEventListener("submit", submitStage);
+}
+function submitStage(event) { event.preventDefault(); const stage = simulator.stages.find((item) => item.id === state.activeStage); try { completeStage(simulator, state, stage.id, { response: new FormData(event.currentTarget).get("response") }); if (stage.id === simulator.stages.at(-1).id) finishAttempt(simulator, state); persist(); render(); } catch (error) { document.querySelector("#message").textContent = error.message; } }
+function renderCompletion() { window.history.replaceState({}, "", "#completion"); app.innerHTML = `<header class="site-header"><div class="brand"><img src="${logo}" alt="Flexible Training Solutions"><div><strong>${esc(simulator.systemName)}</strong><span>Job completion record</span></div></div></header><main class="shell"><section class="card completion"><p class="eyebrow">Job finalised</p><h1>Workplace job complete</h1><p>Record this code on your assessment or include the downloaded report in your LMS submission.</p><output class="completion-code">${esc(state.completion.code)}</output><p class="note">This code and report are learner-provided evidence. They are not authenticated evidence and do not make a final competency decision.</p><div class="actions"><button class="button button-primary" id="pdf">Download evidence PDF</button><button class="button button-secondary" id="reset">Start a new session</button></div></section></main>`; document.querySelector("#pdf").addEventListener("click", () => downloadEvidencePdf({ title: simulator.title, state, config: simulator })); document.querySelector("#reset").addEventListener("click", resetAttempt); }
+function resetAttempt() { if (!window.confirm("Reset this local attempt? Your saved activity and completion code will be removed from this browser.")) return; state = store.reset(); render(); }
+render();

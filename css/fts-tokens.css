@@ -1,0 +1,25 @@
+@font-face { font-family: "Inter"; src: url("../fonts/Inter-Variable.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Outfit"; src: url("../fonts/Outfit-Variable.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
+
+:root {
+  --fts-navy: #1E3F78;
+  --fts-navy-dark: #16315F;
+  --fts-orange: #E58A2A;
+  --fts-orange-text: #9A520A;
+  --fts-white: #FFFFFF;
+  --fts-surface: #F2F2F2;
+  --fts-ink: #16242C;
+  --fts-muted: #52636C;
+  --fts-line: #C9D2D6;
+  --fts-focus: #9A520A;
+  --fts-success: #176B43;
+  --fts-success-soft: #E6F4EC;
+  --fts-warning: #8A5100;
+  --fts-warning-soft: #FFF3DC;
+  --fts-danger: #A33C3C;
+  --fts-danger-soft: #FCEBEC;
+  --fts-radius: 10px;
+  --fts-shadow: 0 8px 24px rgba(22, 36, 44, .10);
+  --fts-font-heading: Outfit, Arial, Helvetica, sans-serif;
+  --fts-font-body: Inter, Arial, Helvetica, sans-serif;
+}
